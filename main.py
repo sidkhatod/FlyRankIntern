@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 from fastapi.responses import JSONResponse
 
 app = FastAPI()
@@ -18,17 +18,37 @@ def read_root():
 def health_check():
     return {"status": "ok"}
 
-# 2. Return the whole list of tasks
 @app.get("/tasks")
 def get_tasks():
     return tasks
 
-# 3 & 4. Return one task or a 404 error
 @app.get("/tasks/{id}")
 def get_task(id: int):
     for task in tasks:
         if task["id"] == id:
             return task
-            
-    # If the loop finishes and no task matches the ID, return a 404
     return JSONResponse(status_code=404, content={"error": f"Task {id} not found"})
+
+# --- NEW STAGE 3 CODE BELOW ---
+
+@app.post("/tasks", status_code=201)
+def create_task(payload: dict = Body(...)):
+    title = payload.get("title")
+    
+    # Validate the input: block missing or empty titles with a 400 Bad Request
+    if not title or not str(title).strip():
+        return JSONResponse(status_code=400, content={"error": "Title is required and cannot be empty"})
+    
+    # Calculate the next available ID
+    new_id = max(task["id"] for task in tasks) + 1 if tasks else 1
+    
+    # Create the new task object
+    new_task = {
+        "id": new_id,
+        "title": title,
+        "done": False
+    }
+    
+    # Save it to our memory list and return it
+    tasks.append(new_task)
+    return new_task

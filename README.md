@@ -44,4 +44,4 @@ Even though the entire storage engine was swapped from an in-memory Python array
 ![Swagger UI Screenshot](swagger.png)
 
 **2. DB Browser for SQLite (Viewing the Data)**
-![DB Browser](dB_UI.png)`)*
+![DB Browser](DB_UI.png)

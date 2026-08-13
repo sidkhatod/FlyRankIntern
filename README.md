@@ -45,3 +45,34 @@ Even though the entire storage engine was swapped from an in-memory Python array
 
 **2. DB Browser for SQLite (Viewing the Data)**
 ![DB Browser](DB_UI.png)
+
+---
+
+## Week 3 (Part 2): Docker & PostgreSQL Containerization
+
+The application architecture has been upgraded from a local SQLite file to a production-ready PostgreSQL database running inside a Docker container. Both the FastAPI application and the database are orchestrated using Docker Compose.
+
+### How to Run
+
+1. Clone the repository.
+2. Create a `.env` file in the root directory using `.env.example` as a template:
+   ```bash
+   cp .env.example .env
+   ```
+3. Build and start the containers using Docker Compose:
+   ```bash
+   docker compose up --build
+   ```
+
+The API will be available at [http://localhost:8000/docs](http://localhost:8000/docs).
+
+### Proof of Persistence (Docker Volumes)
+
+To ensure data is not lost when the database container stops, a named Docker volume (`postgres_data`) is used.
+
+**Persistence Test Conducted:**
+1. Spun up the containers using `docker compose up`.
+2. Created a new task via `POST /tasks` using the Swagger UI.
+3. Stopped the containers using `CTRL+C` (and ran `docker compose down`).
+4. Restarted the containers with `docker compose up`.
+5. Sent a `GET /tasks` request and verified that the previously created task was still present in the database, proving the volume was successfully persisting the data outside the container's ephemeral file system.

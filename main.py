@@ -1,7 +1,12 @@
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Body, Depends
 from fastapi.responses import JSONResponse
 from sqlmodel import Field, Session, SQLModel, create_engine, select
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Define the Task model using SQLModel
 class Task(SQLModel, table=True):
@@ -10,10 +15,9 @@ class Task(SQLModel, table=True):
     title: str
     done: bool = Field(default=False)
 
-# Database Configuration
-sqlite_file_name = "tasks.db"
-sqlite_url = f"sqlite:///{sqlite_file_name}"
-engine = create_engine(sqlite_url, echo=False)
+# Database Configuration for PostgreSQL
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:secret@db:5432/tasks_db")
+engine = create_engine(DATABASE_URL, echo=False)
 
 # Lifespan logic to initialize the database
 def create_db_and_tables():
